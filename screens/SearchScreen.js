@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { useQuery } from '@apollo/client';
 import { Card, Image } from 'react-native-elements';
-import { SEARCH_MEDIA } from '../graphql/queries';
+import { SEARCH_MEDIA, GET_POPULAR_MEDIA } from '../graphql/queries';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 const SearchScreen = () => {
   const [searchText, setSearchText] = useState('');
 
-  const { loading, error, data } = useQuery(SEARCH_MEDIA, {
+  const { loading: searchLoading, error: searchError, data: searchData } = useQuery(SEARCH_MEDIA, {
     variables: { search: searchText },
     skip: !searchText,
+  });
+
+  const { loading: popularLoading, error: popularError, data: popularData } = useQuery(GET_POPULAR_MEDIA, {
+    skip: searchText.length > 0,
   });
 
   const handleSearch = (text) => {
@@ -20,6 +24,24 @@ const SearchScreen = () => {
 
   const clearSearch = () => {
     setSearchText('');
+  };
+
+  const renderMediaList = (mediaList) => {
+    return mediaList.map((item) => (
+      <Card containerStyle={styles.card} key={item.id}>
+        <Image
+          source={{ uri: item.coverImage.large }}
+          style={styles.coverImage}
+        />
+        <View style={styles.cardContent}>
+          <Text style={styles.title}>
+            {item.title.english || item.title.romaji}
+          </Text>
+          <Text style={styles.subtitle}>{item.type}</Text>
+          <Text style={styles.subtitle}>Year: {item.startDate.year}</Text>
+        </View>
+      </Card>
+    ));
   };
 
   return (
@@ -38,24 +60,13 @@ const SearchScreen = () => {
             </TouchableOpacity>
           )}
         </View>
-        {loading && <Text style={styles.loadingText}>Loading...</Text>}
-        {error && <Text style={styles.errorText}>Error: {error.message}</Text>}
+        {searchLoading && <Text style={styles.loadingText}>Loading...</Text>}
+        {searchError && <Text style={styles.errorText}>Error: {searchError.message}</Text>}
         <ScrollView>
-          {data && data.Page.media.map((item) => (
-            <Card containerStyle={styles.card} key={item.id}>
-              <Image
-                source={{ uri: item.coverImage.large }}
-                style={styles.coverImage}
-              />
-              <View style={styles.cardContent}>
-                <Text style={styles.title}>
-                  {item.title.english || item.title.romaji}
-                </Text>
-                <Text style={styles.subtitle}>{item.type}</Text>
-                <Text style={styles.subtitle}>Year: {item.startDate.year}</Text>
-              </View>
-            </Card>
-          ))}
+          {searchText.length > 0 && searchData && renderMediaList(searchData.Page.media)}
+          {searchText.length === 0 && popularLoading && <Text style={styles.loadingText}>Loading popular media...</Text>}
+          {searchText.length === 0 && popularError && <Text style={styles.errorText}>Error: {popularError.message}</Text>}
+          {searchText.length === 0 && popularData && renderMediaList(popularData.Page.media)}
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -102,22 +113,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 10,
     borderColor: '#6A0DAD',
+    marginBottom: 10,
+    padding: 10,
   },
   coverImage: {
     width: '100%',
-    height: 200,
+    height: 150,
     borderRadius: 10,
   },
   cardContent: {
     marginTop: 10,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#6A0DAD',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6A0DAD',
   },
 });
