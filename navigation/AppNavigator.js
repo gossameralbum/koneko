@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import SearchScreen from '../screens/SearchScreen';
-import AnimeListScreen from '../screens/Animanga/AnimeListScreen';
-import MangaListScreen from '../screens/Animanga/MangaListScreen';
+import AnimeListScreen from '../screens/AnimeListScreen';
+import MangaListScreen from '../screens/MangaListScreen';
 import ListsScreen from '../screens/ListsScreen';
 
 const Tab = createBottomTabNavigator();
@@ -19,8 +19,10 @@ const AppNavigator = () => {
 
             if (route.name === 'Search') {
               iconName = focused ? 'search' : 'search-outline';
-            } else if (route.name === 'Animanga') {
-              iconName = focused ? 'star' : 'star-outline';
+            } else if (route.name === 'Anime') {
+              iconName = focused ? 'tv' : 'tv-outline';
+            }  else if (route.name === "Manga") {
+                iconName = focused? 'book' : 'book-outline';
             } else if (route.name === 'Lists') {
               iconName = focused ? 'list' : 'list-outline';
             }
@@ -32,7 +34,8 @@ const AppNavigator = () => {
         })}
       >
         <Tab.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />
-        <Tab.Screen name="Animanga" component={AnimeListScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="Anime" component={AnimeListScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="Manga" component={MangaListScreen} options={{ headerShown: false }} />
         <Tab.Screen name="Lists" component={ListsScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
     </NavigationContainer>
