@@ -1,10 +1,12 @@
 import { gql } from '@apollo/client';
 
 export const SEARCH_MEDIA = gql`
-  query SearchMedia($search: String) {
-    Page(page: 1, perPage: 5) {
+  query SearchMedia($search: String, $page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
       media(search: $search, isAdult: false) {
         id
+        episodes 
+        chapters
         title {
           romaji
           english
@@ -17,15 +19,22 @@ export const SEARCH_MEDIA = gql`
           year
         }
       }
+      pageInfo {
+        currentPage
+        lastPage
+        hasNextPage
+      }
     }
   }
 `;
 
 export const GET_POPULAR_MEDIA = gql`
-  query GetPopularMedia {
-    Page(page: 1, perPage: 10) {
+  query GetPopularMedia($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
       media(sort: POPULARITY_DESC, isAdult: false) {
         id
+        episodes 
+        chapters
         title {
           romaji
           english
@@ -37,6 +46,11 @@ export const GET_POPULAR_MEDIA = gql`
         startDate {
           year
         }
+      }
+      pageInfo {
+        currentPage
+        lastPage
+        hasNextPage
       }
     }
   }
