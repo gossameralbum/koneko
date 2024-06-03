@@ -1,3 +1,4 @@
+// SearchScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { useQuery } from '@apollo/client';
@@ -8,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const ITEMS_PER_PAGE = 10;
 
-const SearchScreen = () => {
+const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const [page, setPage] = useState(1);
   const [mediaList, setMediaList] = useState([]);
@@ -83,20 +84,22 @@ const SearchScreen = () => {
   const renderMediaItem = ({ item }) => {
     const count = item.type === 'ANIME' ? item.episodes : item.chapters;
     return (
-      <Card containerStyle={styles.card}>
-        <View style={styles.cardContent}>
-          <Image
-            source={{ uri: item.coverImage.large }}
-            style={styles.coverImage}
-          />
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>{item.title.english || item.title.romaji}</Text>
-            <Text style={styles.subtitle}>Episodes/Chapters: {count || 'N/A'}</Text>
-            <Text style={styles.subtitle}>Type: {item.type}</Text>
-            <Text style={styles.subtitle}>Year: {item.startDate.year}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('MediaDetails', { id: item.id, type: item.type })}>
+        <Card containerStyle={styles.card}>
+          <View style={styles.cardContent}>
+            <Image
+              source={{ uri: item.coverImage.large }}
+              style={styles.coverImage}
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{item.title.english || item.title.romaji}</Text>
+              <Text style={styles.subtitle}>Episodes/Chapters: {count || 'N/A'}</Text>
+              <Text style={styles.subtitle}>Year: {item.startDate.year}</Text>
+              <Text style={styles.subtitle}>Type: {item.type}</Text>
+            </View>
           </View>
-        </View>
-      </Card>
+        </Card>
+      </TouchableOpacity>
     );
   };
 

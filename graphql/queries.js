@@ -1,3 +1,4 @@
+// queries.js
 import { gql } from '@apollo/client';
 
 export const SEARCH_MEDIA = gql`
@@ -18,10 +19,12 @@ export const SEARCH_MEDIA = gql`
         startDate {
           year
         }
+        type
+        startDate {
+          year
+        }
       }
       pageInfo {
-        currentPage
-        lastPage
         hasNextPage
       }
     }
@@ -46,12 +49,45 @@ export const GET_POPULAR_MEDIA = gql`
         startDate {
           year
         }
+        type
+        startDate {
+          year
+        }
       }
       pageInfo {
-        currentPage
-        lastPage
         hasNextPage
       }
+    }
+  }
+`;
+
+export const GET_MEDIA_DETAILS = gql`
+  query GetMediaDetails($id: Int) {
+    Media(id: $id) {
+      id
+      title {
+        romaji
+        english
+      }
+      coverImage {
+        large
+      }
+      format
+      type
+      duration
+      startDate {
+        year
+        month
+        day
+      }
+      endDate {
+        year
+        month
+        day
+      }
+      countryOfOrigin
+      genres
+      description
     }
   }
 `;
